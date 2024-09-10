@@ -1,8 +1,8 @@
 #! /bin/csh -f
 
 ### set neccesary env
-setenv TOP top
-setenv VER silver_v1
+setenv TOP hdmi_colorbar_top
+setenv VER DEMO_v1
 setenv DATA `data +%y%m%d`
 setenv syn_style rtl2syn
 # rtl2syn / dft2iso
