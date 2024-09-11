@@ -1,5 +1,7 @@
 ### Set env and path ###
 set TOP [getenv TOP]
+set DATE [getenv DATE]
+set VER [getenv VER]
 set INCLUDE_PATH ../hdl/
 set SCRIPT_PATH ../scr/
 set NETLIST_PATH ../net/
@@ -78,22 +80,30 @@ set DONT_TOUCH_CELL {
 
 set congestion_high_effort false
 # POWER
-set power_high_effort true
+set power_high_effort false
 # Others
-set_fix_multiple_port_nets  -feedthroughs   -outputs    -buffer_constrant
+set compile_seqmap_propagate_constants false
+set_fix_multiple_port_nets  -feedthroughs   -outputs    -buffer_constant
 compile_ultra -no_autoungroup -no_boundary_optimization -gate_clock -retime -scan -no_seq_output_inversion
+#set_ideal_network   -no_propagate    [get_nets dpc_inst/shift_reg_reg[0]]   
+#set_ideal_network   -no_propagate    [get_nets aaf_inst/shift_reg_reg[0]]   
+#set_ideal_network   -no_propagate    [get_nets cnf_inst/shift_reg_reg[0]]   
+#set_ideal_network   -no_propagate    [get_nets cfa_inst/shift_reg_reg[0]]   
+#set_ideal_network   -no_propagate    [get_nets bnf_inst/shift_reg_reg[0]]   
+#set high_fanout_net_threshold 60  
+#set high_fanout_net_pin_capacitance 0.01  
 
 ### Analyze and resolve design problems ###
 check_design > ${REPORT_PATH}${DATE}${VER}/${TOP}_check_design.rpt
 check_timing > ${REPORT_PATH}${DATE}${VER}/${TOP}_check_timing.rpt
 # report_clock > ${REPORT+PATH}${DATE}${VER}/${TOP}_clock_pre.rpt
 report_area -hierarchy -nosplit > ${REPORT_PATH}${DATE}${VER}/${TOP}_area_pre.rpt
-report_constranit -all > ${REPORT_PATH}${DATE}${VER}/${TOP}_all_vio_pre.rpt
+report_constraint -all > ${REPORT_PATH}${DATE}${VER}/${TOP}_all_vio_pre.rpt
 # report_clock_gating -hier > ${REPORT_PATH}${DATE}${VER}/${TOP}_icg_pre.rpt
 report_timing -loops -max_path 100 -nworst 100 > ${REPORT_PATH}${DATE}${VER}/${TOP}_loop_pre.rpt
 # report_power > ${REPORT_PATH}${DATE}${VER}/${TOP}_power_pre.rpt
 
 ### Save the design database ###
-write_sdc -verion 1.4 ${SDC_PATH}${DATA}${VER}/${TOP}_cons.sdc
+write_sdc -version 1.4 ${SDC_PATH}${DATE}${VER}/${TOP}_cons.sdc
 write -format ddc -hierarchy -output ${DDC_PATH}${TOP}${VER}_${DATE}.ddc
 write -format verilog -hierarchy -output ${NETLIST_PATH}${DATE}${VER}/${TOP}.v
